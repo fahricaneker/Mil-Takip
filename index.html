@@ -9,56 +9,36 @@
     <style>
         :root { --mil-dark: #0f172a; --mil-red: #e11d48; --mil-green: #22c55e; --mil-orange: #f59e0b; --mil-blue: #3b82f6; --mil-bg: #f1f5f9; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--mil-bg); margin: 0; padding: 15px; padding-bottom: 40px; }
-        
         .header-card { background: var(--mil-dark); color: white; padding: 20px; border-radius: 20px; text-align: center; margin-bottom: 15px; }
         #conn-status { font-size: 10px; margin-top: 8px; font-weight: bold; }
-
         .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .s-box { background: white; padding: 12px; border-radius: 15px; text-align: center; border: 1px solid #e2e8f0; }
-        .s-box small { display: block; font-size: 9px; color: #64748b; font-weight: 800; margin-bottom: 4px; }
         .s-box b { font-size: 15px; }
-
         .filter-section { background: white; padding: 10px; border-radius: 12px; margin-bottom: 15px; display: flex; gap: 8px; border: 1px solid #e2e8f0; }
         select { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1; font-weight: 600; }
-
-        .form-container { background: white; padding: 18px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-        input { width: 100%; padding: 12px; margin-bottom: 8px; border-radius: 10px; border: 1px solid #cbd5e1; box-sizing: border-box; font-size: 14px; }
+        .form-container { background: white; padding: 18px; border-radius: 20px; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin-bottom: 8px; border-radius: 10px; border: 1px solid #cbd5e1; box-sizing: border-box; }
         .btn-save { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--mil-red); color: white; font-weight: 800; cursor: pointer; }
-
         .job-card { background: white; padding: 15px; border-radius: 18px; margin-bottom: 12px; border-left: 6px solid #94a3b8; position: relative; }
-        .st-waiting { border-left-color: var(--mil-orange); }
-        .st-doing { border-left-color: var(--mil-blue); }
-        .st-done { border-left-color: var(--mil-green); }
-
-        .job-title { font-weight: 800; font-size: 15px; margin-bottom: 2px; }
-        .job-work { font-size: 12px; color: #64748b; margin-bottom: 10px; }
-        
-        /* Maliyet ve Para Tablosu */
+        .st-waiting { border-left-color: var(--mil-orange); } .st-doing { border-left-color: var(--mil-blue); } .st-done { border-left-color: var(--mil-green); }
         .money-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: #f8fafc; padding: 10px; border-radius: 12px; font-size: 11px; }
-        .money-grid div { display: flex; justify-content: space-between; border-bottom: 1px solid #edf2f7; padding: 2px 0; }
-        .money-grid span { color: #64748b; }
-        .money-grid b { color: var(--mil-dark); }
-
-        .kalan-borc { text-align: center; padding: 10px; margin-top: 5px; color: var(--mil-red); font-weight: 900; font-size: 15px; }
-
+        .money-grid div { display: flex; justify-content: space-between; border-bottom: 1px solid #edf2f7; }
+        .kalan-borc { text-align: center; padding: 10px; color: var(--mil-red); font-weight: 900; font-size: 15px; }
         .card-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 10px; }
         .btn-sm { padding: 10px 0; border: none; border-radius: 8px; color: white; font-size: 9px; font-weight: 700; cursor: pointer; }
-        .bg-st { background: var(--mil-dark); } 
-        .bg-wa { background: #25D366; } 
-        .bg-pay { background: var(--mil-green); } 
-        .bg-del { background: #fee2e2; color: var(--mil-red); }
+        .bg-st { background: var(--mil-dark); } .bg-wa { background: #25D366; } .bg-pay { background: var(--mil-green); } .bg-del { background: #fee2e2; color: var(--mil-red); }
     </style>
 </head>
 <body>
 
 <div class="header-card">
-    <h1 style="margin:0; font-size: 20px;">MİL FİNANS</h1>
-    <div id="conn-status">Yükleniyor...</div>
+    <h1 style="margin:0; font-size: 18px;">MİL FİNANS</h1>
+    <div id="conn-status">Bağlantı Kontrol Ediliyor...</div>
 </div>
 
 <div class="summary-grid">
-    <div class="s-box"><small>AYLIK CİRO</small><b id="resCiro">0 TL</b></div>
-    <div class="s-box"><small>AYLIK KÂR</small><b id="resProfit" style="color:var(--mil-green)">0 TL</b></div>
+    <div class="s-box"><small>AYLIK CİRO</small><br><b id="resCiro">0 TL</b></div>
+    <div class="s-box"><small>AYLIK KÂR</small><br><b id="resProfit" style="color:var(--mil-green)">0 TL</b></div>
 </div>
 
 <div class="filter-section">
@@ -69,17 +49,17 @@
         <option value="10">Ekim</option><option value="11">Kasım</option><option value="12">Aralık</option>
     </select>
     <select id="fYear" onchange="loadData()">
-        <option value="2025">2025</option><option value="2026">2026</option>
+        <option value="2025" selected>2025</option><option value="2026">2026</option>
     </select>
 </div>
 
 <div class="form-container">
     <input type="text" id="cName" placeholder="Müşteri Adı">
-    <input type="text" id="wDesc" placeholder="Yapılan İş">
+    <input type="text" id="wDesc" placeholder="Yapılacak İş">
     <input type="number" id="tPrice" placeholder="Satış Fiyatı">
     <input type="number" id="tCost" placeholder="Maliyet">
-    <input type="number" id="tPaid" placeholder="Kapora / Ödeme">
-    <button class="btn-save" onclick="addJob()">SİSTEME KAYDET</button>
+    <input type="number" id="tPaid" placeholder="Ödenen / Kapora">
+    <button class="btn-save" onclick="addJob()">BULUTA GÖNDER</button>
 </div>
 
 <div id="jobList"></div>
@@ -100,7 +80,7 @@
 
     db.ref(".info/connected").on("value", (s) => {
         const el = document.getElementById('conn-status');
-        el.innerText = s.val() ? "● BULUT AKTİF" : "○ BAĞLANTI YOK";
+        el.innerText = s.val() ? "● BULUT AKTİF" : "○ BAĞLANTI HATASI";
         el.style.color = s.val() ? "#22c55e" : "#ef4444";
     });
 
@@ -114,13 +94,18 @@
     function addJob() {
         const name = document.getElementById('cName').value.trim();
         const price = parseFloat(document.getElementById('tPrice').value) || 0;
-        if(!name || price <= 0) return alert("Hata: Bilgileri eksiksiz girin!");
+        
+        if(!name || price <= 0) {
+            alert("Lütfen isim ve satış fiyatı girin!");
+            return;
+        }
 
         const now = new Date();
+        const itemId = Date.now().toString();
         const item = {
-            id: Date.now().toString(),
+            id: itemId,
             name: name.toUpperCase(),
-            work: document.getElementById('wDesc').value.toUpperCase(),
+            work: document.getElementById('wDesc').value.toUpperCase() || "İŞ TANIMI YOK",
             total: price,
             cost: parseFloat(document.getElementById('tCost').value) || 0,
             paid: parseFloat(document.getElementById('tPaid').value) || 0,
@@ -130,8 +115,17 @@
             y: now.getFullYear()
         };
 
-        db.ref("isler/" + item.id).set(item).then(() => {
-            document.querySelectorAll('input').forEach(i => i.value = '');
+        db.ref("isler/" + itemId).set(item, (error) => {
+            if (error) {
+                alert("KAYIT BAŞARISIZ: " + error.message);
+            } else {
+                document.getElementById('cName').value = '';
+                document.getElementById('wDesc').value = '';
+                document.getElementById('tPrice').value = '';
+                document.getElementById('tCost').value = '';
+                document.getElementById('tPaid').value = '';
+                alert("İş buluta kaydedildi.");
+            }
         });
     }
 
@@ -154,18 +148,15 @@
                 
                 list.innerHTML += `
                     <div class="job-card ${cls}">
-                        <div class="job-title">${j.name}</div>
-                        <div class="job-work">${j.work}</div>
-                        
+                        <div style="font-weight:800; font-size:15px;">${j.name}</div>
+                        <div style="font-size:12px; color:#64748b; margin-bottom:10px;">${j.work}</div>
                         <div class="money-grid">
                             <div><span>Maliyet:</span><b>${j.cost} TL</b></div>
                             <div><span>Satış:</span><b>${j.total} TL</b></div>
                             <div><span>Ödenen:</span><b style="color:var(--mil-green)">${j.paid} TL</b></div>
-                            <div><span>Net Kâr:</span><b style="color:var(--mil-blue)">${netKar} TL</b></div>
+                            <div><span>Kâr:</span><b style="color:var(--mil-blue)">${netKar} TL</b></div>
                         </div>
-                        
                         <div class="kalan-borc">${kalan} TL</div>
-
                         <div class="card-actions">
                             <button class="btn-sm bg-st" onclick="upSt('${j.id}','${j.status}')">${j.status}</button>
                             <button class="btn-sm bg-pay" onclick="pay('${j.id}',${j.paid},${j.total})">ÖDEME</button>
@@ -191,7 +182,6 @@
 
     function del(id) { if(confirm("Kaydı sil?")) db.ref("isler/" + id).remove(); }
     
-    // ESKİ SAMİMİ MESAJ YAPISI
     function wa(name, work, rem) {
         const msg = `Selam ${name}, Mil Reklam'dan Fahrican ben. ${work} işiniz için kalan borç: ${rem} TL. Hayırlı işler.`;
         window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
