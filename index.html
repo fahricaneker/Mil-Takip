@@ -3,52 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mil Finans Pro V19</title>
+    <title>Mil Finans İŞ TAKİP</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
         :root { --mil-dark: #0f172a; --mil-red: #e11d48; --mil-green: #22c55e; --mil-orange: #f59e0b; --mil-blue: #0ea5e9; --mil-bg: #f1f5f9; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--mil-bg); margin: 0; padding: 15px; padding-bottom: 40px; }
         
-        /* V7 Tarzı Üst Panel */
+        /* Üst Başlık Paneli */
         .header-card { background: var(--mil-dark); color: white; padding: 20px; border-radius: 20px; text-align: center; margin-bottom: 15px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
-        .header-card h1 { margin: 0; font-size: 20px; text-transform: uppercase; }
+        .header-card h1 { margin: 0; font-size: 20px; text-transform: uppercase; letter-spacing: 1px; }
         #conn-status { font-size: 10px; margin-top: 8px; font-weight: bold; padding: 4px 10px; border-radius: 20px; display: inline-block; }
 
-        /* Özet Kartları */
+        /* Özet Kutuları */
         .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .s-box { background: white; padding: 12px; border-radius: 15px; text-align: center; border: 1px solid #e2e8f0; }
-        .s-box small { display: block; font-size: 9px; color: #64748b; font-weight: 800; margin-bottom: 4px; }
+        .s-box { background: white; padding: 12px; border-radius: 15px; text-align: center; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .s-box small { display: block; font-size: 9px; color: #64748b; font-weight: 800; margin-bottom: 4px; text-transform: uppercase; }
         .s-box b { font-size: 15px; color: var(--mil-dark); }
 
-        /* Filtreleme Paneli */
+        /* Filtreleme */
         .filter-section { background: white; padding: 10px; border-radius: 12px; margin-bottom: 15px; display: flex; gap: 8px; border: 1px solid #e2e8f0; }
-        select { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 13px; font-weight: 600; }
+        select { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 13px; font-weight: 600; color: var(--mil-dark); }
 
-        /* Giriş Formu */
-        .form-container { background: white; padding: 15px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        /* Form Alanı */
+        .form-container { background: white; padding: 18px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
         input { width: 100%; padding: 12px; margin-bottom: 8px; border-radius: 10px; border: 1px solid #cbd5e1; box-sizing: border-box; font-size: 14px; }
-        .btn-save { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--mil-orange); color: white; font-weight: 800; cursor: pointer; }
+        .btn-save { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--mil-orange); color: white; font-weight: 800; cursor: pointer; }
 
-        /* İş Kartları */
-        .job-card { background: white; padding: 15px; border-radius: 18px; margin-bottom: 12px; border-left: 6px solid #94a3b8; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        /* İŞ KARTLARI */
+        .job-card { background: white; padding: 15px; border-radius: 18px; margin-bottom: 12px; border-left: 6px solid #94a3b8; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
         .st-waiting { border-left-color: var(--mil-orange); }
         .st-doing { border-left-color: var(--mil-blue); }
         .st-done { border-left-color: var(--mil-green); }
 
-        .price-tag { position: absolute; top: 15px; right: 15px; font-weight: 800; color: var(--mil-red); }
-        .money-detail { display: flex; justify-content: space-between; background: #f8fafc; padding: 8px; border-radius: 10px; margin-top: 10px; font-size: 11px; }
+        .price-tag { position: absolute; top: 15px; right: 15px; font-weight: 800; color: var(--mil-red); font-size: 15px; }
         
-        .card-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 10px; }
-        .btn-sm { padding: 8px 0; border: none; border-radius: 6px; color: white; font-size: 9px; font-weight: 700; cursor: pointer; }
+        /* MALİYET VE KÂR DETAYI */
+        .money-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #f8fafc; padding: 10px; border-radius: 12px; margin-top: 10px; font-size: 11px; }
+        .money-detail div { display: flex; flex-direction: column; gap: 2px; }
+        .money-detail span { color: #64748b; font-weight: 600; font-size: 9px; text-transform: uppercase; }
+        .money-detail b { font-size: 12px; color: var(--mil-dark); }
+
+        .kalan-footer { text-align: center; padding: 8px; margin-top: 10px; border-top: 1px dashed #e2e8f0; color: var(--mil-red); font-weight: 800; font-size: 13px; }
+
+        .card-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 12px; }
+        .btn-sm { padding: 9px 0; border: none; border-radius: 8px; color: white; font-size: 9px; font-weight: 700; cursor: pointer; }
         .bg-st { background: var(--mil-dark); } .bg-wa { background: #25D366; } .bg-pay { background: var(--mil-green); } .bg-del { background: #fee2e2; color: var(--mil-red); }
     </style>
 </head>
 <body>
 
 <div class="header-card">
-    <h1>MİL İŞ TAKİP</h1>
-    <div id="conn-status" style="background: rgba(0,0,0,0.3);">Bağlanıyor...</div>
+    <h1>MİL FİNANS İŞ TAKİP</h1>
+    <div id="conn-status">Bulut kontrol ediliyor...</div>
 </div>
 
 <div class="summary-grid">
@@ -70,11 +77,11 @@
 
 <div class="form-container">
     <input type="text" id="cName" placeholder="Müşteri Adı">
-    <input type="text" id="wDesc" placeholder="Yapılacak İş">
+    <input type="text" id="wDesc" placeholder="Yapılacak İş (Örn: Branda baskı)">
     <input type="number" id="tPrice" placeholder="Satış Fiyatı">
     <input type="number" id="tCost" placeholder="Maliyet">
-    <input type="number" id="tPaid" placeholder="Peşinat">
-    <button class="btn-save" onclick="addJob()">BULUTA KAYDET</button>
+    <input type="number" id="tPaid" placeholder="Peşinat / Kapora">
+    <button class="btn-save" onclick="addJob()">İŞİ BULUTA KAYDET</button>
 </div>
 
 <div id="jobList"></div>
@@ -93,19 +100,12 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Bağlantı durumunu kontrol et
     db.ref(".info/connected").on("value", (s) => {
         const el = document.getElementById('conn-status');
-        if(s.val()) { 
-            el.innerText = "● BULUT AKTİF"; 
-            el.style.color = "#22c55e"; 
-        } else { 
-            el.innerText = "○ BAĞLANTI KESİLDİ"; 
-            el.style.color = "#ef4444"; 
-        }
+        if(s.val()) { el.innerText = "● BULUT AKTİF"; el.style.color = "#22c55e"; }
+        else { el.innerText = "○ BAĞLANTI YOK"; el.style.color = "#ef4444"; }
     });
 
-    // Bugünün tarihini seç
     const d = new Date();
     document.getElementById('fMonth').value = d.getMonth() + 1;
     document.getElementById('fYear').value = d.getFullYear();
@@ -117,7 +117,7 @@
     function addJob() {
         const name = document.getElementById('cName').value.trim();
         const price = parseFloat(document.getElementById('tPrice').value) || 0;
-        if(!name || price <= 0) return alert("Müşteri ve Fiyat girin!");
+        if(!name || price <= 0) return alert("Hata: Ad ve Fiyat girin!");
 
         const now = new Date();
         const item = {
@@ -145,26 +145,31 @@
 
         const selM = parseInt(document.getElementById('fMonth').value);
         const selY = parseInt(document.getElementById('fYear').value);
-        let ciro = 0, kar = 0;
+        let ciro = 0, karTotal = 0;
 
         Object.values(data).reverse().forEach(j => {
             if(j.m === selM && j.y === selY) {
                 const kalan = j.total - j.paid;
-                const net = j.total - j.cost;
-                ciro += j.total; kar += net;
+                const netKar = j.total - j.cost;
+                ciro += j.total; karTotal += netKar;
 
                 let cls = j.status === 'Bitti' ? 'st-done' : (j.status === 'Yapılıyor' ? 'st-doing' : 'st-waiting');
                 
                 list.innerHTML += `
                     <div class="job-card ${cls}">
                         <div class="price-tag">${j.total} TL</div>
-                        <div style="font-weight:800; font-size:14px;">${j.name}</div>
-                        <div style="font-size:12px; color:#64748b; margin-top:2px;">${j.work}</div>
+                        <div style="font-weight:800; font-size:14px; color:var(--mil-dark)">${j.name}</div>
+                        <div style="font-size:11px; color:#64748b; margin-top:2px;">${j.work}</div>
+                        
                         <div class="money-detail">
-                            <span>Maliyet: ${j.cost}</span>
-                            <span>Alınan: <b>${j.paid}</b></span>
-                            <span>Kalan: <b style="color:var(--mil-red)">${kalan}</b></span>
+                            <div><span>MALİYET</span><b>${j.cost} TL</b></div>
+                            <div><span>NET KÂR</span><b style="color:var(--mil-blue)">${netKar} TL</b></div>
+                            <div><span>ALINAN</span><b style="color:var(--mil-green)">${j.paid} TL</b></div>
+                            <div><span>TUTAR</span><b>${j.total} TL</b></div>
                         </div>
+                        
+                        <div class="kalan-footer">KALAN BORÇ: ${kalan} TL</div>
+
                         <div class="card-actions">
                             <button class="btn-sm bg-st" onclick="upSt('${j.id}','${j.status}')">DURUM</button>
                             <button class="btn-sm bg-pay" onclick="pay('${j.id}',${j.paid},${j.total})">ÖDEME</button>
@@ -175,7 +180,7 @@
             }
         });
         document.getElementById('resCiro').innerText = ciro.toLocaleString() + " TL";
-        document.getElementById('resProfit').innerText = kar.toLocaleString() + " TL";
+        document.getElementById('resProfit').innerText = karTotal.toLocaleString() + " TL";
     }
 
     function upSt(id, cur) {
@@ -188,8 +193,8 @@
         if(v) db.ref("isler/" + id).update({ paid: p + parseFloat(v) });
     }
 
-    function del(id) { if(confirm("Kaydı sil?")) db.ref("isler/" + id).remove(); }
-    function wa(n, r) { window.open(`https://wa.me/?text=Sayın ${n}, güncel borcunuz ${r} TL'dir.`); }
+    function del(id) { if(confirm("Silmek istediğine emin misin?")) db.ref("isler/" + id).remove(); }
+    function wa(n, r) { window.open(`https://wa.me/?text=Sayın ${n}, güncel borcunuz ${r} TL'dir. Mil Reklam.`); }
 
     loadData();
 </script>
