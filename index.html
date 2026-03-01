@@ -22,9 +22,10 @@
         .filter-section { background: white; padding: 8px; border-radius: 12px; margin-bottom: 10px; display: flex; gap: 5px; }
         select { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #cbd5e1; font-weight: 600; }
 
-        .form-container { background: white; padding: 15px; border-radius: 20px; margin-bottom: 15px; }
-        input { width: 100%; padding: 10px; margin-bottom: 6px; border-radius: 8px; border: 1px solid #cbd5e1; box-sizing: border-box; }
-        .btn-save { width: 100%; padding: 12px; border-radius: 10px; border: none; background: var(--mil-red); color: white; font-weight: 800; cursor: pointer; }
+        /* FORM ÜSTTE KALIYOR */
+        .form-container { background: white; padding: 15px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        input { width: 100%; padding: 10px; margin-bottom: 6px; border-radius: 8px; border: 1px solid #cbd5e1; box-sizing: border-box; font-size: 14px; }
+        .btn-save { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--mil-red); color: white; font-weight: 800; cursor: pointer; }
 
         .job-card { background: white; padding: 12px; border-radius: 15px; margin-bottom: 10px; border-left: 6px solid #94a3b8; }
         .st-waiting { border-left-color: var(--mil-orange); } .st-doing { border-left-color: var(--mil-blue); } .st-done { border-left-color: var(--mil-green); }
@@ -34,7 +35,7 @@
         .kalan-borc { text-align: center; padding: 8px; color: var(--mil-red); font-weight: 900; font-size: 14px; }
 
         .card-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 8px; }
-        .btn-sm { padding: 8px 0; border: none; border-radius: 6px; color: white; font-size: 9px; font-weight: 700; }
+        .btn-sm { padding: 10px 0; border: none; border-radius: 6px; color: white; font-size: 9px; font-weight: 700; }
         .bg-st { background: var(--mil-dark); } .bg-wa { background: #25D366; } .bg-pay { background: var(--mil-green); } .bg-del { background: #fee2e2; color: var(--mil-red); }
     </style>
 </head>
@@ -45,7 +46,7 @@
     <div id="conn-status" style="font-size:10px;">Bağlanıyor...</div>
     
     <div class="kasa-box">
-        <small id="kasaLabel">BU AYIN KASASI</small>
+        <small id="kasaLabel">KASA YÜKLENİYOR</small>
         <div id="resKasa">0 TL</div>
     </div>
 </div>
@@ -55,21 +56,21 @@
     <div class="s-box"><small>AYLIK KÂR</small><br><b id="resProfit" style="color:var(--mil-green)">0 TL</b></div>
 </div>
 
+<div class="form-container">
+    <input type="text" id="cName" placeholder="Müşteri Adı">
+    <input type="text" id="wDesc" placeholder="İş Tanımı (Örn: Branda)">
+    <input type="number" id="tPrice" placeholder="Satış Fiyatı">
+    <input type="number" id="tCost" placeholder="Maliyet">
+    <input type="number" id="tPaid" placeholder="Alınan Peşinat">
+    <button class="btn-save" onclick="addJob()">SİSTEME KAYDET</button>
+</div>
+
 <div class="filter-section">
     <select id="fMonth" onchange="loadData()"><option value="1">Ocak</option><option value="2">Şubat</option><option value="3">Mart</option><option value="4">Nisan</option><option value="5">Mayıs</option><option value="6">Haziran</option><option value="7">Temmuz</option><option value="8">Ağustos</option><option value="9">Eylül</option><option value="10">Ekim</option><option value="11">Kasım</option><option value="12">Aralık</option></select>
     <select id="fYear" onchange="loadData()"><option value="2025">2025</option><option value="2026" selected>2026</option></select>
 </div>
 
 <div id="jobList"></div>
-
-<div class="form-container">
-    <input type="text" id="cName" placeholder="Müşteri Adı">
-    <input type="text" id="wDesc" placeholder="İş Tanımı">
-    <input type="number" id="tPrice" placeholder="Satış Fiyatı">
-    <input type="number" id="tCost" placeholder="Maliyet">
-    <input type="number" id="tPaid" placeholder="Peşinat">
-    <button class="btn-save" onclick="addJob()">SİSTEME KAYDET</button>
-</div>
 
 <script>
     const firebaseConfig = {
@@ -102,7 +103,7 @@
     function addJob() {
         const name = document.getElementById('cName').value.trim();
         const price = parseFloat(document.getElementById('tPrice').value) || 0;
-        if(!name || price <= 0) return alert("Hata!");
+        if(!name || price <= 0) return alert("Lütfen isim ve fiyat girin!");
 
         const itemId = Date.now().toString();
         const item = {
@@ -134,13 +135,12 @@
 
         let ciro = 0, karTotal = 0, kasaNakit = 0;
 
+        // reverse() kullanarak en yeni işi en üstte gösteriyoruz
         Object.values(data).reverse().forEach(j => {
-            // Sadece ŞU ANKİ GERÇEK AYIN tahsilatlarını kasaya ekle (Otomatik sıfırlama mantığı)
             if(j.m === currentM && j.y === currentY) {
                 kasaNakit += j.paid;
             }
 
-            // Filtrelenen ayın listesini göster
             if(j.m === selM && j.y === selY) {
                 const kalan = j.total - j.paid;
                 const netKar = j.total - j.cost;
