@@ -9,31 +9,23 @@
     <style>
         :root { --mil-dark: #0f172a; --mil-red: #e11d48; --mil-green: #22c55e; --mil-orange: #f59e0b; --mil-blue: #3b82f6; --mil-bg: #f1f5f9; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--mil-bg); margin: 0; padding: 10px; padding-bottom: 40px; }
-        
         .header-card { background: var(--mil-dark); color: white; padding: 15px; border-radius: 20px; text-align: center; margin-bottom: 10px; }
         .kasa-box { background: rgba(34, 197, 94, 0.1); border: 1px solid var(--mil-green); padding: 10px; border-radius: 15px; margin-top: 10px; }
         .kasa-box small { font-size: 10px; color: var(--mil-green); font-weight: 800; text-transform: uppercase; }
         .kasa-box div { font-size: 22px; font-weight: 900; color: var(--mil-green); }
-
         .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
         .s-box { background: white; padding: 10px; border-radius: 15px; text-align: center; border: 1px solid #e2e8f0; }
         .s-box b { font-size: 14px; }
-
-        .filter-section { background: white; padding: 8px; border-radius: 12px; margin-bottom: 10px; display: flex; gap: 5px; }
-        select { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #cbd5e1; font-weight: 600; }
-
-        /* FORM ÜSTTE KALIYOR */
         .form-container { background: white; padding: 15px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         input { width: 100%; padding: 10px; margin-bottom: 6px; border-radius: 8px; border: 1px solid #cbd5e1; box-sizing: border-box; font-size: 14px; }
         .btn-save { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--mil-red); color: white; font-weight: 800; cursor: pointer; }
-
+        .filter-section { background: white; padding: 8px; border-radius: 12px; margin-bottom: 10px; display: flex; gap: 5px; }
+        select { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #cbd5e1; font-weight: 600; }
         .job-card { background: white; padding: 12px; border-radius: 15px; margin-bottom: 10px; border-left: 6px solid #94a3b8; }
         .st-waiting { border-left-color: var(--mil-orange); } .st-doing { border-left-color: var(--mil-blue); } .st-done { border-left-color: var(--mil-green); }
-        
         .money-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; background: #f8fafc; padding: 8px; border-radius: 10px; font-size: 10px; }
         .money-grid div { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; }
         .kalan-borc { text-align: center; padding: 8px; color: var(--mil-red); font-weight: 900; font-size: 14px; }
-
         .card-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 8px; }
         .btn-sm { padding: 10px 0; border: none; border-radius: 6px; color: white; font-size: 9px; font-weight: 700; }
         .bg-st { background: var(--mil-dark); } .bg-wa { background: #25D366; } .bg-pay { background: var(--mil-green); } .bg-del { background: #fee2e2; color: var(--mil-red); }
@@ -44,9 +36,8 @@
 <div class="header-card">
     <h1 style="margin:0; font-size: 18px;">MİL FİNANS</h1>
     <div id="conn-status" style="font-size:10px;">Bağlanıyor...</div>
-    
     <div class="kasa-box">
-        <small id="kasaLabel">KASA YÜKLENİYOR</small>
+        <small id="kasaLabel">KASA</small>
         <div id="resKasa">0 TL</div>
     </div>
 </div>
@@ -58,16 +49,21 @@
 
 <div class="form-container">
     <input type="text" id="cName" placeholder="Müşteri Adı">
-    <input type="text" id="wDesc" placeholder="İş Tanımı (Örn: Branda)">
+    <input type="text" id="wDesc" placeholder="İş Tanımı">
     <input type="number" id="tPrice" placeholder="Satış Fiyatı">
     <input type="number" id="tCost" placeholder="Maliyet">
-    <input type="number" id="tPaid" placeholder="Alınan Peşinat">
+    <input type="number" id="tPaid" placeholder="Peşinat">
     <button class="btn-save" onclick="addJob()">SİSTEME KAYDET</button>
 </div>
 
 <div class="filter-section">
-    <select id="fMonth" onchange="loadData()"><option value="1">Ocak</option><option value="2">Şubat</option><option value="3">Mart</option><option value="4">Nisan</option><option value="5">Mayıs</option><option value="6">Haziran</option><option value="7">Temmuz</option><option value="8">Ağustos</option><option value="9">Eylül</option><option value="10">Ekim</option><option value="11">Kasım</option><option value="12">Aralık</option></select>
-    <select id="fYear" onchange="loadData()"><option value="2025">2025</option><option value="2026" selected>2026</option></select>
+    <select id="fMonth" onchange="loadData()">
+        <option value="1">Ocak</option><option value="2">Şubat</option><option value="3">Mart</option>
+        <option value="4">Nisan</option><option value="5">Mayıs</option><option value="6">Haziran</option>
+        <option value="7">Temmuz</option><option value="8">Ağustos</option><option value="9">Eylül</option>
+        <option value="10">Ekim</option><option value="11">Kasım</option><option value="12">Aralık</option>
+    </select>
+    <select id="fYear" onchange="loadData()"></select>
 </div>
 
 <div id="jobList"></div>
@@ -92,9 +88,21 @@
         el.style.color = s.val() ? "#22c55e" : "#ef4444";
     });
 
+    // OTOMATİK YIL AYARI
     const now = new Date();
+    const currentYear = now.getFullYear();
+    const yearSelect = document.getElementById('fYear');
+    
+    // Geçen yıldan başla, 5 yıl sonrasına kadar listeye ekle
+    for(let i = currentYear - 1; i <= currentYear + 5; i++) {
+        let opt = document.createElement('option');
+        opt.value = i;
+        opt.innerHTML = i;
+        if(i === currentYear) opt.selected = true;
+        yearSelect.appendChild(opt);
+    }
+
     document.getElementById('fMonth').value = now.getMonth() + 1;
-    document.getElementById('fYear').value = now.getFullYear();
 
     function loadData() {
         db.ref("isler").on("value", (snap) => render(snap.val()));
@@ -103,7 +111,7 @@
     function addJob() {
         const name = document.getElementById('cName').value.trim();
         const price = parseFloat(document.getElementById('tPrice').value) || 0;
-        if(!name || price <= 0) return alert("Lütfen isim ve fiyat girin!");
+        if(!name || price <= 0) return alert("Hata!");
 
         const itemId = Date.now().toString();
         const item = {
@@ -130,22 +138,18 @@
 
         const selM = parseInt(document.getElementById('fMonth').value);
         const selY = parseInt(document.getElementById('fYear').value);
-        const currentM = now.getMonth() + 1;
-        const currentY = now.getFullYear();
+        const curM = now.getMonth() + 1;
+        const curY = now.getFullYear();
 
         let ciro = 0, karTotal = 0, kasaNakit = 0;
 
-        // reverse() kullanarak en yeni işi en üstte gösteriyoruz
         Object.values(data).reverse().forEach(j => {
-            if(j.m === currentM && j.y === currentY) {
-                kasaNakit += j.paid;
-            }
+            if(j.m === curM && j.y === curY) kasaNakit += j.paid;
 
             if(j.m === selM && j.y === selY) {
                 const kalan = j.total - j.paid;
                 const netKar = j.total - j.cost;
                 ciro += j.total; karTotal += netKar;
-
                 let cls = j.status === 'Bitti' ? 'st-done' : (j.status === 'Yapılıyor' ? 'st-doing' : 'st-waiting');
                 
                 list.innerHTML += `
@@ -172,21 +176,18 @@
         document.getElementById('resCiro').innerText = ciro.toLocaleString() + " TL";
         document.getElementById('resProfit').innerText = karTotal.toLocaleString() + " TL";
         document.getElementById('resKasa').innerText = kasaNakit.toLocaleString() + " TL";
-        
         const aylar = ["", "OCAK", "ŞUBAT", "MART", "NİSAN", "MAYIS", "HAZİRAN", "TEMMUZ", "AĞUSTOS", "EYLÜL", "EKİM", "KASIM", "ARALIK"];
-        document.getElementById('kasaLabel').innerText = aylar[currentM] + " KASASI (NAKİT)";
+        document.getElementById('kasaLabel').innerText = aylar[curM] + " KASASI";
     }
 
     function upSt(id, cur) {
         const s = ['Bekliyor', 'Yapılıyor', 'Bitti'];
         db.ref("isler/" + id).update({ status: s[(s.indexOf(cur) + 1) % 3] });
     }
-
     function pay(id, p, t) {
         const v = prompt("Alınan miktar:", t - p);
         if(v) db.ref("isler/" + id).update({ paid: p + parseFloat(v) });
     }
-
     function del(id) { if(confirm("Kaydı sil?")) db.ref("isler/" + id).remove(); }
     function wa(name, work, rem) {
         const msg = `Selam ${name}, Mil Reklam'dan Fahrican ben. ${work} işiniz için kalan borç: ${rem} TL. Hayırlı işler.`;
