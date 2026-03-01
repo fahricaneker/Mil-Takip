@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mil Raporlu V14</title>
+    <title>Mil Analiz V15</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
@@ -11,16 +11,15 @@
         body { font-family: sans-serif; background: #f1f5f9; margin: 0; padding: 10px; padding-bottom: 50px; }
         .header { background: var(--dark); color: white; padding: 15px; border-radius: 15px; text-align: center; margin-bottom: 10px; }
         
-        /* Rapor Kartları */
-        .report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-        .r-card { background: white; padding: 12px; border-radius: 12px; border-top: 4px solid var(--profit); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .r-card small { font-size: 10px; color: var(--slate); font-weight: bold; text-transform: uppercase; }
-        .r-card div { font-size: 14px; font-weight: 800; margin-top: 4px; }
+        /* Filtre Paneli */
+        .filter-box { background: #fff; padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 2px solid var(--profit); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .filter-box label { grid-column: span 2; font-size: 11px; font-weight: bold; color: var(--profit); text-align: center; }
+        select { padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; background: white; }
 
-        .summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-        .s-card { background: var(--dark); color: white; padding: 10px; border-radius: 12px; text-align: center; }
-        .s-card small { font-size: 9px; opacity: 0.8; display: block; margin-bottom: 4px; }
-        .s-card b { font-size: 12px; }
+        .report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+        .r-card { background: white; padding: 12px; border-radius: 12px; border-top: 4px solid var(--profit); box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center; }
+        .r-card small { font-size: 10px; color: var(--slate); font-weight: bold; }
+        .r-card div { font-size: 16px; font-weight: 800; margin-top: 5px; }
 
         .form-box { background: white; padding: 15px; border-radius: 20px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
         input { width: 100%; padding: 10px; margin-bottom: 8px; border-radius: 10px; border: 1px solid #cbd5e1; box-sizing: border-box; font-size: 14px; }
@@ -45,28 +44,33 @@
 <body>
 
 <div class="header">
-    <h2 style="margin:0; font-size: 16px;">MİL FİNANS ANALİZ V14</h2>
+    <h2 style="margin:0; font-size: 16px;">MİL ANALİZ V15</h2>
+</div>
+
+<div class="filter-box">
+    <label>GÖRÜNTÜLENEN DÖNEM</label>
+    <select id="filterMonth" onchange="loadData()">
+        <option value="1">Ocak</option><option value="2">Şubat</option><option value="3">Mart</option>
+        <option value="4">Nisan</option><option value="5">Mayıs</option><option value="6">Haziran</option>
+        <option value="7">Temmuz</option><option value="8">Ağustos</option><option value="9">Eylül</option>
+        <option value="10">Ekim</option><option value="11">Kasım</option><option value="12">Aralık</option>
+    </select>
+    <select id="filterYear" onchange="loadData()">
+        <option value="2024">2024</option>
+        <option value="2025" selected>2025</option>
+        <option value="2026">2026</option>
+    </select>
 </div>
 
 <div class="report-grid">
     <div class="r-card">
-        <small>BU AY KÂR</small>
-        <div id="monthProfit" style="color:var(--safe)">0 TL</div>
+        <small>DÖNEM CİROSU</small>
+        <div id="selectedCiro">0 TL</div>
     </div>
     <div class="r-card">
-        <small>GEÇEN AY KÂR</small>
-        <div id="lastMonthProfit" style="color:var(--slate)">0 TL</div>
+        <small>DÖNEM KÂRI</small>
+        <div id="selectedProfit" style="color:var(--safe)">0 TL</div>
     </div>
-    <div class="r-card" style="grid-column: span 2; border-top-color: var(--warn);">
-        <small>YILLIK TOPLAM CİRO (${new Date().getFullYear()})</small>
-        <div id="yearCiro" style="font-size: 18px;">0 TL</div>
-    </div>
-</div>
-
-<div class="summary-grid">
-    <div class="s-card"><small>KASA</small><b id="totalKasa">0 TL</b></div>
-    <div class="s-card"><small>ALACAK</small><b id="totalAlacak">0 TL</b></div>
-    <div class="s-card"><small>TOPLAM KÂR</small><b id="totalProfit">0 TL</b></div>
 </div>
 
 <div class="form-box">
@@ -75,7 +79,7 @@
     <input type="number" id="totalPrice" placeholder="Satış Fiyatı">
     <input type="number" id="maliyet" placeholder="Maliyet">
     <input type="number" id="kapora" placeholder="Alınan Kapora">
-    <button class="btn-add" onclick="addJob()">SİSTEME İŞLE</button>
+    <button class="btn-add" onclick="addJob()">İŞİ KAYDET</button>
 </div>
 
 <div id="jobList"></div>
@@ -94,14 +98,22 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    db.ref("isler").on("value", (snapshot) => {
-        render(snapshot.val());
-    });
+    // Sayfa açıldığında bugünün tarihini seç
+    const bugun = new Date();
+    document.getElementById('filterMonth').value = bugun.getMonth() + 1;
+    document.getElementById('filterYear').value = bugun.getFullYear();
+
+    // Verileri gerçek zamanlı dinle
+    function loadData() {
+        db.ref("isler").on("value", (snapshot) => {
+            render(snapshot.val());
+        });
+    }
 
     function addJob() {
         const name = document.getElementById('custName').value.trim();
         const price = parseFloat(document.getElementById('totalPrice').value) || 0;
-        if(!name || price <= 0) return alert("Eksik bilgi!");
+        if(!name || price <= 0) return alert("Hata: Ad ve Fiyat girin!");
 
         const now = new Date();
         const newJob = {
@@ -113,13 +125,12 @@
             paid: parseFloat(document.getElementById('kapora').value) || 0,
             status: 'Bekliyor',
             date: now.toLocaleDateString('tr-TR'),
-            month: now.getMonth() + 1, // 1-12
-            year: now.getFullYear(),
-            timestamp: now.getTime()
+            month: now.getMonth() + 1,
+            year: now.getFullYear()
         };
 
         db.ref("isler/" + newJob.id).set(newJob);
-        document.querySelectorAll('input').forEach(i => i.value = '');
+        document.querySelectorAll('.form-box input').forEach(i => i.value = '');
     }
 
     function render(data) {
@@ -127,60 +138,46 @@
         list.innerHTML = '';
         if(!data) return;
 
-        let tk = 0, ta = 0, tp = 0, monthP = 0, lastMonthP = 0, yearC = 0;
-        
-        const now = new Date();
-        const currMonth = now.getMonth() + 1;
-        const currYear = now.getFullYear();
-        const lastMonth = currMonth === 1 ? 12 : currMonth - 1;
-        const lastMonthYear = currMonth === 1 ? currYear - 1 : currYear;
+        const selMonth = parseInt(document.getElementById('filterMonth').value);
+        const selYear = parseInt(document.getElementById('filterYear').value);
+
+        let dCiro = 0, dProfit = 0;
 
         Object.values(data).reverse().forEach(j => {
-            const kalan = j.total - j.paid;
-            const kar = j.total - j.cost;
-            
-            // Genel Toplamlar
-            tk += j.paid;
-            if(kalan > 0) ta += kalan;
-            tp += kar;
+            // Sadece seçilen ay ve yıla ait olanları göster
+            if(j.month === selMonth && j.year === selYear) {
+                const kalan = j.total - j.paid;
+                const kar = j.total - j.cost;
+                
+                dCiro += j.total;
+                dProfit += kar;
 
-            // Ay/Yıl Analizi
-            if(j.year === currYear) {
-                yearC += j.total; // Yıllık Ciro
-                if(j.month === currMonth) monthP += kar; // Bu Ay Kâr
+                let sClass = j.status === 'Bitti' ? 'status-done' : (j.status === 'Yapılıyor' ? 'status-doing' : 'status-wait');
+                
+                list.innerHTML += `
+                    <div class="job-card ${sClass}">
+                        <div style="display:flex; justify-content:space-between; font-weight:800;">
+                            <span>${j.name}</span>
+                            <span style="font-size:10px;">${j.date}</span>
+                        </div>
+                        <div style="font-size:12px; color:var(--slate); margin-bottom:5px;">${j.work}</div>
+                        <div class="money-table">
+                            <div>Satış: <b>${j.total}</b></div>
+                            <div>Kâr: <b style="color:var(--profit)">${kar}</b></div>
+                            <div class="rem-row">KALAN: ${kalan.toLocaleString()} TL</div>
+                        </div>
+                        <div class="actions">
+                            <button class="btn-act bg-status" onclick="updateStatus('${j.id}', '${j.status}')">${j.status}</button>
+                            <button class="btn-act bg-pay" onclick="pay('${j.id}', ${j.paid}, ${j.total})">ÖDEME</button>
+                            <button class="btn-act bg-wa" onclick="wa('${j.name}', ${j.total-j.paid})">WA</button>
+                            <button class="btn-act bg-del" onclick="del('${j.id}')">SİL</button>
+                        </div>
+                    </div>`;
             }
-            if(j.month === lastMonth && j.year === lastMonthYear) {
-                lastMonthP += kar; // Geçen Ay Kâr
-            }
-
-            let sClass = j.status === 'Bitti' ? 'status-done' : (j.status === 'Yapılıyor' ? 'status-doing' : 'status-wait');
-            list.innerHTML += `
-                <div class="job-card ${sClass}">
-                    <div style="display:flex; justify-content:space-between; font-weight:800;">
-                        <span>${j.name}</span>
-                        <span style="font-size:10px;">${j.date}</span>
-                    </div>
-                    <div style="font-size:12px; color:var(--slate); margin-bottom:5px;">${j.work}</div>
-                    <div class="money-table">
-                        <div>Satış: <b>${j.total}</b></div>
-                        <div>Kâr: <b style="color:var(--profit)">${kar}</b></div>
-                        <div class="rem-row">KALAN: ${kalan.toLocaleString()} TL</div>
-                    </div>
-                    <div class="actions">
-                        <button class="btn-act bg-status" onclick="updateStatus('${j.id}', '${j.status}')">${j.status}</button>
-                        <button class="btn-act bg-pay" onclick="pay('${j.id}', ${j.paid}, ${j.total})">ÖDEME</button>
-                        <button class="btn-act bg-wa" onclick="wa('${j.name}', ${j.total-j.paid})">WA</button>
-                        <button class="btn-act bg-del" onclick="del('${j.id}')">SİL</button>
-                    </div>
-                </div>`;
         });
 
-        document.getElementById('totalKasa').innerText = tk.toLocaleString() + " TL";
-        document.getElementById('totalAlacak').innerText = ta.toLocaleString() + " TL";
-        document.getElementById('totalProfit').innerText = tp.toLocaleString() + " TL";
-        document.getElementById('monthProfit').innerText = monthP.toLocaleString() + " TL";
-        document.getElementById('lastMonthProfit').innerText = lastMonthP.toLocaleString() + " TL";
-        document.getElementById('yearCiro').innerText = yearC.toLocaleString() + " TL";
+        document.getElementById('selectedCiro').innerText = dCiro.toLocaleString() + " TL";
+        document.getElementById('selectedProfit').innerText = dProfit.toLocaleString() + " TL";
     }
 
     function updateStatus(id, current) {
@@ -193,11 +190,10 @@
         if(m) db.ref("isler/" + id).update({ paid: current + parseFloat(m) });
     }
 
-    function del(id) { if(confirm("Silinsin mi?")) db.ref("isler/" + id).remove(); }
-    
-    function wa(name, rem) {
-        window.open(`https://wa.me/?text=Selam ${name}, kalan borcunuz ${rem} TL'dir.`);
-    }
+    function del(id) { if(confirm("Kaydı sil?")) db.ref("isler/" + id).remove(); }
+    function wa(n, r) { window.open(`https://wa.me/?text=Selam ${n}, kalan borcunuz ${r} TL.`); }
+
+    loadData();
 </script>
 </body>
 </html>
