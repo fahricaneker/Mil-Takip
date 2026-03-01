@@ -3,22 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mil Analiz V15</title>
+    <title>Mil Analiz V16</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
         :root { --mil: #e11d48; --safe: #22c55e; --warn: #f59e0b; --dark: #0f172a; --slate: #64748b; --wa: #25D366; --profit: #0ea5e9; }
         body { font-family: sans-serif; background: #f1f5f9; margin: 0; padding: 10px; padding-bottom: 50px; }
         .header { background: var(--dark); color: white; padding: 15px; border-radius: 15px; text-align: center; margin-bottom: 10px; }
+        #conn-status { font-size: 10px; color: #ffeb3b; margin-top: 5px; }
         
-        /* Filtre Paneli */
         .filter-box { background: #fff; padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 2px solid var(--profit); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .filter-box label { grid-column: span 2; font-size: 11px; font-weight: bold; color: var(--profit); text-align: center; }
         select { padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; background: white; }
 
         .report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
         .r-card { background: white; padding: 12px; border-radius: 12px; border-top: 4px solid var(--profit); box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center; }
-        .r-card small { font-size: 10px; color: var(--slate); font-weight: bold; }
         .r-card div { font-size: 16px; font-weight: 800; margin-top: 5px; }
 
         .form-box { background: white; padding: 15px; border-radius: 20px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
@@ -44,11 +43,12 @@
 <body>
 
 <div class="header">
-    <h2 style="margin:0; font-size: 16px;">MİL İş Takip</h2>
+    <h2 style="margin:0; font-size: 16px;">MİL ANALİZ V16</h2>
+    <div id="conn-status">Bağlantı Kontrol Ediliyor...</div>
 </div>
 
 <div class="filter-box">
-    <label>GÖRÜNTÜLENEN DÖNEM</label>
+    <label>DÖNEM SEÇİMİ</label>
     <select id="filterMonth" onchange="loadData()">
         <option value="1">Ocak</option><option value="2">Şubat</option><option value="3">Mart</option>
         <option value="4">Nisan</option><option value="5">Mayıs</option><option value="6">Haziran</option>
@@ -56,21 +56,14 @@
         <option value="10">Ekim</option><option value="11">Kasım</option><option value="12">Aralık</option>
     </select>
     <select id="filterYear" onchange="loadData()">
-        <option value="2024">2024</option>
         <option value="2025" selected>2025</option>
         <option value="2026">2026</option>
     </select>
 </div>
 
 <div class="report-grid">
-    <div class="r-card">
-        <small>DÖNEM CİROSU</small>
-        <div id="selectedCiro">0 TL</div>
-    </div>
-    <div class="r-card">
-        <small>DÖNEM KÂRI</small>
-        <div id="selectedProfit" style="color:var(--safe)">0 TL</div>
-    </div>
+    <div class="r-card"><small>DÖNEM CİRO</small><div id="selectedCiro">0 TL</div></div>
+    <div class="r-card"><small>DÖNEM KÂR</small><div id="selectedProfit" style="color:var(--safe)">0 TL</div></div>
 </div>
 
 <div class="form-box">
@@ -79,17 +72,18 @@
     <input type="number" id="totalPrice" placeholder="Satış Fiyatı">
     <input type="number" id="maliyet" placeholder="Maliyet">
     <input type="number" id="kapora" placeholder="Alınan Kapora">
-    <button class="btn-add" onclick="addJob()">İŞİ KAYDET</button>
+    <button class="btn-add" onclick="addJob()">İŞİ BULUTA GÖNDER</button>
 </div>
 
 <div id="jobList"></div>
 
 <script>
+    // ÖNEMLİ: Eğer databaseURL hatası verirse Firebase Console -> Realtime Database içindeki linki buraya yaz.
     const firebaseConfig = {
         apiKey: "AIzaSyCzS92_P_yDB50vb-MpRgbtnaj4aF8dzQA",
         authDomain: "miltakip.firebaseapp.com",
         projectId: "miltakip",
-        databaseURL: "https://miltakip-default-rtdb.firebaseio.com",
+        databaseURL: "https://miltakip-default-rtdb.firebaseio.com", 
         storageBucket: "miltakip.firebasestorage.app",
         messagingSenderId: "1033075543287",
         appId: "1:1033075543287:web:c02c56199db5ec70d517f2"
@@ -98,12 +92,21 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Sayfa açıldığında bugünün tarihini seç
+    // Bağlantı Durumunu Kontrol Et
+    const connectedRef = db.ref(".info/connected");
+    connectedRef.on("value", (snap) => {
+        if (snap.val() === true) {
+            document.getElementById('conn-status').innerText = "● Bağlı (Aktif)";
+            document.getElementById('conn-status').style.color = "#4caf50";
+        } else {
+            document.getElementById('conn-status').innerText = "○ Bağlantı Kesildi!";
+            document.getElementById('conn-status').style.color = "#f44336";
+        }
+    });
+
     const bugun = new Date();
     document.getElementById('filterMonth').value = bugun.getMonth() + 1;
-    document.getElementById('filterYear').value = bugun.getFullYear();
 
-    // Verileri gerçek zamanlı dinle
     function loadData() {
         db.ref("isler").on("value", (snapshot) => {
             render(snapshot.val());
@@ -113,11 +116,11 @@
     function addJob() {
         const name = document.getElementById('custName').value.trim();
         const price = parseFloat(document.getElementById('totalPrice').value) || 0;
-        if(!name || price <= 0) return alert("Hata: Ad ve Fiyat girin!");
+        if(!name || price <= 0) return alert("Hata: Bilgileri eksiksiz girin!");
 
         const now = new Date();
         const newJob = {
-            id: Date.now(),
+            id: Date.now().toString(),
             name: name.toUpperCase(),
             work: document.getElementById('workDesc').value.toUpperCase(),
             total: price,
@@ -129,8 +132,13 @@
             year: now.getFullYear()
         };
 
-        db.ref("isler/" + newJob.id).set(newJob);
-        document.querySelectorAll('.form-box input').forEach(i => i.value = '');
+        db.ref("isler/" + newJob.id).set(newJob, (error) => {
+            if (error) {
+                alert("Veri kaydedilemedi: " + error.message);
+            } else {
+                document.querySelectorAll('.form-box input').forEach(i => i.value = '');
+            }
+        });
     }
 
     function render(data) {
@@ -140,15 +148,12 @@
 
         const selMonth = parseInt(document.getElementById('filterMonth').value);
         const selYear = parseInt(document.getElementById('filterYear').value);
-
         let dCiro = 0, dProfit = 0;
 
         Object.values(data).reverse().forEach(j => {
-            // Sadece seçilen ay ve yıla ait olanları göster
             if(j.month === selMonth && j.year === selYear) {
                 const kalan = j.total - j.paid;
                 const kar = j.total - j.cost;
-                
                 dCiro += j.total;
                 dProfit += kar;
 
@@ -157,10 +162,9 @@
                 list.innerHTML += `
                     <div class="job-card ${sClass}">
                         <div style="display:flex; justify-content:space-between; font-weight:800;">
-                            <span>${j.name}</span>
-                            <span style="font-size:10px;">${j.date}</span>
+                            <span>${j.name}</span><span style="font-size:10px;">${j.date}</span>
                         </div>
-                        <div style="font-size:12px; color:var(--slate); margin-bottom:5px;">${j.work}</div>
+                        <div style="font-size:12px; color:var(--slate);">${j.work}</div>
                         <div class="money-table">
                             <div>Satış: <b>${j.total}</b></div>
                             <div>Kâr: <b style="color:var(--profit)">${kar}</b></div>
@@ -175,7 +179,6 @@
                     </div>`;
             }
         });
-
         document.getElementById('selectedCiro').innerText = dCiro.toLocaleString() + " TL";
         document.getElementById('selectedProfit').innerText = dProfit.toLocaleString() + " TL";
     }
@@ -190,8 +193,8 @@
         if(m) db.ref("isler/" + id).update({ paid: current + parseFloat(m) });
     }
 
-    function del(id) { if(confirm("Kaydı sil?")) db.ref("isler/" + id).remove(); }
-    function wa(n, r) { window.open(`https://wa.me/?text=Selam ${n}, kalan borcunuz ${r} TL.`); }
+    function del(id) { if(confirm("Silinsin mi?")) db.ref("isler/" + id).remove(); }
+    function wa(n, r) { window.open(`https://wa.me/?text=Selam ${n}, borcunuz ${r} TL.`); }
 
     loadData();
 </script>
