@@ -3,64 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mil Finans İŞ TAKİP</title>
+    <title>Mil Finans</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
-        :root { --mil-dark: #0f172a; --mil-red: #e11d48; --mil-green: #22c55e; --mil-orange: #f59e0b; --mil-blue: #0ea5e9; --mil-bg: #f1f5f9; }
+        :root { --mil-dark: #0f172a; --mil-red: #e11d48; --mil-green: #22c55e; --mil-orange: #f59e0b; --mil-blue: #3b82f6; --mil-bg: #f1f5f9; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--mil-bg); margin: 0; padding: 15px; padding-bottom: 40px; }
         
-        /* Üst Başlık Paneli */
-        .header-card { background: var(--mil-dark); color: white; padding: 20px; border-radius: 20px; text-align: center; margin-bottom: 15px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
-        .header-card h1 { margin: 0; font-size: 20px; text-transform: uppercase; letter-spacing: 1px; }
-        #conn-status { font-size: 10px; margin-top: 8px; font-weight: bold; padding: 4px 10px; border-radius: 20px; display: inline-block; }
+        .header-card { background: var(--mil-dark); color: white; padding: 20px; border-radius: 20px; text-align: center; margin-bottom: 15px; }
+        #conn-status { font-size: 10px; margin-top: 8px; font-weight: bold; }
 
-        /* Özet Kutuları */
         .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .s-box { background: white; padding: 12px; border-radius: 15px; text-align: center; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .s-box small { display: block; font-size: 9px; color: #64748b; font-weight: 800; margin-bottom: 4px; text-transform: uppercase; }
-        .s-box b { font-size: 15px; color: var(--mil-dark); }
+        .s-box { background: white; padding: 12px; border-radius: 15px; text-align: center; border: 1px solid #e2e8f0; }
+        .s-box small { display: block; font-size: 9px; color: #64748b; font-weight: 800; margin-bottom: 4px; }
+        .s-box b { font-size: 15px; }
 
-        /* Filtreleme */
         .filter-section { background: white; padding: 10px; border-radius: 12px; margin-bottom: 15px; display: flex; gap: 8px; border: 1px solid #e2e8f0; }
-        select { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 13px; font-weight: 600; color: var(--mil-dark); }
+        select { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1; font-weight: 600; }
 
-        /* Form Alanı */
         .form-container { background: white; padding: 18px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
         input { width: 100%; padding: 12px; margin-bottom: 8px; border-radius: 10px; border: 1px solid #cbd5e1; box-sizing: border-box; font-size: 14px; }
-        .btn-save { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--mil-orange); color: white; font-weight: 800; cursor: pointer; }
+        .btn-save { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--mil-red); color: white; font-weight: 800; cursor: pointer; }
 
-        /* İŞ KARTLARI */
-        .job-card { background: white; padding: 15px; border-radius: 18px; margin-bottom: 12px; border-left: 6px solid #94a3b8; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .job-card { background: white; padding: 15px; border-radius: 18px; margin-bottom: 12px; border-left: 6px solid #94a3b8; position: relative; }
         .st-waiting { border-left-color: var(--mil-orange); }
         .st-doing { border-left-color: var(--mil-blue); }
         .st-done { border-left-color: var(--mil-green); }
 
-        .price-tag { position: absolute; top: 15px; right: 15px; font-weight: 800; color: var(--mil-red); font-size: 15px; }
+        .job-title { font-weight: 800; font-size: 15px; margin-bottom: 2px; }
+        .job-work { font-size: 12px; color: #64748b; margin-bottom: 10px; }
         
-        /* MALİYET VE KÂR DETAYI */
-        .money-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #f8fafc; padding: 10px; border-radius: 12px; margin-top: 10px; font-size: 11px; }
-        .money-detail div { display: flex; flex-direction: column; gap: 2px; }
-        .money-detail span { color: #64748b; font-weight: 600; font-size: 9px; text-transform: uppercase; }
-        .money-detail b { font-size: 12px; color: var(--mil-dark); }
+        /* Maliyet ve Para Tablosu */
+        .money-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: #f8fafc; padding: 10px; border-radius: 12px; font-size: 11px; }
+        .money-grid div { display: flex; justify-content: space-between; border-bottom: 1px solid #edf2f7; padding: 2px 0; }
+        .money-grid span { color: #64748b; }
+        .money-grid b { color: var(--mil-dark); }
 
-        .kalan-footer { text-align: center; padding: 8px; margin-top: 10px; border-top: 1px dashed #e2e8f0; color: var(--mil-red); font-weight: 800; font-size: 13px; }
+        .kalan-borc { text-align: center; padding: 10px; margin-top: 5px; color: var(--mil-red); font-weight: 900; font-size: 15px; }
 
-        .card-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 12px; }
-        .btn-sm { padding: 9px 0; border: none; border-radius: 8px; color: white; font-size: 9px; font-weight: 700; cursor: pointer; }
-        .bg-st { background: var(--mil-dark); } .bg-wa { background: #25D366; } .bg-pay { background: var(--mil-green); } .bg-del { background: #fee2e2; color: var(--mil-red); }
+        .card-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 10px; }
+        .btn-sm { padding: 10px 0; border: none; border-radius: 8px; color: white; font-size: 9px; font-weight: 700; cursor: pointer; }
+        .bg-st { background: var(--mil-dark); } 
+        .bg-wa { background: #25D366; } 
+        .bg-pay { background: var(--mil-green); } 
+        .bg-del { background: #fee2e2; color: var(--mil-red); }
     </style>
 </head>
 <body>
 
 <div class="header-card">
-    <h1>MİL FİNANS İŞ TAKİP</h1>
-    <div id="conn-status">Bulut kontrol ediliyor...</div>
+    <h1 style="margin:0; font-size: 20px;">MİL FİNANS</h1>
+    <div id="conn-status">Yükleniyor...</div>
 </div>
 
 <div class="summary-grid">
-    <div class="s-box"><small>DÖNEM CİRO</small><b id="resCiro">0 TL</b></div>
-    <div class="s-box"><small>DÖNEM KÂR</small><b id="resProfit" style="color:var(--mil-green)">0 TL</b></div>
+    <div class="s-box"><small>AYLIK CİRO</small><b id="resCiro">0 TL</b></div>
+    <div class="s-box"><small>AYLIK KÂR</small><b id="resProfit" style="color:var(--mil-green)">0 TL</b></div>
 </div>
 
 <div class="filter-section">
@@ -77,11 +75,11 @@
 
 <div class="form-container">
     <input type="text" id="cName" placeholder="Müşteri Adı">
-    <input type="text" id="wDesc" placeholder="Yapılacak İş (Örn: Branda baskı)">
+    <input type="text" id="wDesc" placeholder="Yapılan İş">
     <input type="number" id="tPrice" placeholder="Satış Fiyatı">
     <input type="number" id="tCost" placeholder="Maliyet">
-    <input type="number" id="tPaid" placeholder="Peşinat / Kapora">
-    <button class="btn-save" onclick="addJob()">İŞİ BULUTA KAYDET</button>
+    <input type="number" id="tPaid" placeholder="Kapora / Ödeme">
+    <button class="btn-save" onclick="addJob()">SİSTEME KAYDET</button>
 </div>
 
 <div id="jobList"></div>
@@ -102,13 +100,12 @@
 
     db.ref(".info/connected").on("value", (s) => {
         const el = document.getElementById('conn-status');
-        if(s.val()) { el.innerText = "● BULUT AKTİF"; el.style.color = "#22c55e"; }
-        else { el.innerText = "○ BAĞLANTI YOK"; el.style.color = "#ef4444"; }
+        el.innerText = s.val() ? "● BULUT AKTİF" : "○ BAĞLANTI YOK";
+        el.style.color = s.val() ? "#22c55e" : "#ef4444";
     });
 
     const d = new Date();
     document.getElementById('fMonth').value = d.getMonth() + 1;
-    document.getElementById('fYear').value = d.getFullYear();
 
     function loadData() {
         db.ref("isler").on("value", (snap) => render(snap.val()));
@@ -117,7 +114,7 @@
     function addJob() {
         const name = document.getElementById('cName').value.trim();
         const price = parseFloat(document.getElementById('tPrice').value) || 0;
-        if(!name || price <= 0) return alert("Hata: Ad ve Fiyat girin!");
+        if(!name || price <= 0) return alert("Hata: Bilgileri eksiksiz girin!");
 
         const now = new Date();
         const item = {
@@ -157,23 +154,22 @@
                 
                 list.innerHTML += `
                     <div class="job-card ${cls}">
-                        <div class="price-tag">${j.total} TL</div>
-                        <div style="font-weight:800; font-size:14px; color:var(--mil-dark)">${j.name}</div>
-                        <div style="font-size:11px; color:#64748b; margin-top:2px;">${j.work}</div>
+                        <div class="job-title">${j.name}</div>
+                        <div class="job-work">${j.work}</div>
                         
-                        <div class="money-detail">
-                            <div><span>MALİYET</span><b>${j.cost} TL</b></div>
-                            <div><span>NET KÂR</span><b style="color:var(--mil-blue)">${netKar} TL</b></div>
-                            <div><span>ALINAN</span><b style="color:var(--mil-green)">${j.paid} TL</b></div>
-                            <div><span>TUTAR</span><b>${j.total} TL</b></div>
+                        <div class="money-grid">
+                            <div><span>Maliyet:</span><b>${j.cost} TL</b></div>
+                            <div><span>Satış:</span><b>${j.total} TL</b></div>
+                            <div><span>Ödenen:</span><b style="color:var(--mil-green)">${j.paid} TL</b></div>
+                            <div><span>Net Kâr:</span><b style="color:var(--mil-blue)">${netKar} TL</b></div>
                         </div>
                         
-                        <div class="kalan-footer">KALAN BORÇ: ${kalan} TL</div>
+                        <div class="kalan-borc">${kalan} TL</div>
 
                         <div class="card-actions">
-                            <button class="btn-sm bg-st" onclick="upSt('${j.id}','${j.status}')">DURUM</button>
+                            <button class="btn-sm bg-st" onclick="upSt('${j.id}','${j.status}')">${j.status}</button>
                             <button class="btn-sm bg-pay" onclick="pay('${j.id}',${j.paid},${j.total})">ÖDEME</button>
-                            <button class="btn-sm bg-wa" onclick="wa('${j.name}',${kalan})">WA</button>
+                            <button class="btn-sm bg-wa" onclick="wa('${j.name}','${j.work}',${kalan})">WA</button>
                             <button class="btn-sm bg-del" onclick="del('${j.id}')">SİL</button>
                         </div>
                     </div>`;
@@ -193,8 +189,13 @@
         if(v) db.ref("isler/" + id).update({ paid: p + parseFloat(v) });
     }
 
-    function del(id) { if(confirm("Silmek istediğine emin misin?")) db.ref("isler/" + id).remove(); }
-    function wa(n, r) { window.open(`https://wa.me/?text=Sayın ${n}, güncel borcunuz ${r} TL'dir. Mil Reklam.`); }
+    function del(id) { if(confirm("Kaydı sil?")) db.ref("isler/" + id).remove(); }
+    
+    // ESKİ SAMİMİ MESAJ YAPISI
+    function wa(name, work, rem) {
+        const msg = `Selam ${name}, Mil Reklam'dan Fahrican ben. ${work} işiniz için kalan borç: ${rem} TL. Hayırlı işler.`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
+    }
 
     loadData();
 </script>
