@@ -1,2 +1,0 @@
-# Mil-Takip
-İş takip

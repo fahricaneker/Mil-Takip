@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mil İş Takip V12 | Kesin Çözüm</title>
+    <style>
+        :root { --mil: #e11d48; --safe: #22c55e; --warn: #f59e0b; --dark: #0f172a; --slate: #64748b; --wa: #25D366; --profit: #0ea5e9; }
+        body { font-family: sans-serif; background: #f1f5f9; margin: 0; padding: 10px; padding-bottom: 50px; }
+        .header { background: var(--dark); color: white; padding: 15px; border-radius: 15px; text-align: center; margin-bottom: 10px; }
+        .summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+        .s-card { background: white; padding: 10px; border-radius: 12px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .s-card small { font-size: 9px; color: var(--slate); font-weight: bold; display: block; margin-bottom: 4px; }
+        .s-card b { font-size: 13px; display: block; }
+
+        .form-box { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        input { width: 100%; padding: 10px; margin-bottom: 8px; border-radius: 10px; border: 1px solid #cbd5e1; box-sizing: border-box; font-size: 14px; }
+        .btn-add { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--mil); color: white; font-weight: 800; font-size: 15px; cursor: pointer; }
+
+        .job-card { background: white; padding: 12px; border-radius: 15px; margin-bottom: 10px; border-left: 6px solid var(--slate); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .status-wait { border-left-color: var(--warn); }
+        .status-doing { border-left-color: #3b82f6; }
+        .status-done { border-left-color: var(--safe); }
+        
+        .job-title { font-weight: 800; font-size: 15px; color: var(--dark); display: flex; justify-content: space-between; }
+        .job-work { font-size: 12px; color: var(--slate); margin: 4px 0 10px 0; }
+        
+        .money-table { background: #f8fafc; border-radius: 10px; padding: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 12px; }
+        .money-table div { padding: 3px; }
+        .money-table b { color: var(--dark); }
+        .rem-row { grid-column: span 2; border-top: 1px solid #e2e8f0; margin-top: 5px; padding-top: 5px; text-align: center; }
+        
+        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 10px; }
+        .btn-act { padding: 8px; border: none; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; color: white; }
+        .bg-pay { background: var(--safe); }
+        .bg-del { background: #fee2e2; color: #ef4444; }
+        .bg-status { background: var(--dark); }
+        .bg-wa { background: var(--wa); }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h2 style="margin:0; font-size: 16px;">MİL İŞ TAKİP</h2>
+</div>
+
+<div class="summary-grid">
+    <div class="s-card"><small>KASA (NAKİT)</small><b id="totalKasa" style="color:var(--safe)">0 TL</b></div>
+    <div class="s-card"><small>ALACAKLAR</small><b id="totalAlacak" style="color:var(--mil)">0 TL</b></div>
+    <div class="s-card"><small>TOPLAM KÂR</small><b id="totalProfit" style="color:var(--profit)">0 TL</b></div>
+</div>
+
+<div class="form-box">
+    <input type="text" id="custName" placeholder="Müşteri Adı">
+    <input type="text" id="workDesc" placeholder="Yapılacak İş">
+    <input type="number" id="totalPrice" placeholder="Toplam Satış Fiyatı">
+    <input type="number" id="maliyet" placeholder="Maliyet">
+    <input type="number" id="kapora" placeholder="Alınan Kapora (Ödeme)">
+    <button class="btn-add" onclick="addJob()">İŞİ SİSTEME İŞLE</button>
+</div>
+
+<div id="jobList"></div>
+
+<script>
+    // Verileri tarayıcı hafızasından yükle
+    let jobs = JSON.parse(localStorage.getItem('mil_data_v12')) || [];
+    let kasaBakiye = JSON.parse(localStorage.getItem('mil_kasa_v12')) || 0;
+
+    function addJob() {
+        const name = document.getElementById('custName').value.trim();
+        const work = document.getElementById('workDesc').value.trim();
+        const price = parseFloat(document.getElementById('totalPrice').value) || 0;
+        const cost = parseFloat(document.getElementById('maliyet').value) || 0;
+        const kap = parseFloat(document.getElementById('kapora').value) || 0;
+
+        if(!name || price <= 0) return alert("Müşteri adı ve geçerli fiyat girin!");
+
+        const newJob = {
+            id: Date.now(),
+            name: name.toUpperCase(),
+            work: work.toUpperCase(),
+            total: price,
+            cost: cost,
+            paid: kap,
+            status: 'Bekliyor',
+            date: new Date().toLocaleDateString('tr-TR')
+        };
+
+        jobs.push(newJob);
+        if(kap > 0) kasaBakiye += kap; // Alınan kaporayı kasaya ekle
+        
+        saveAndRender();
+        clearInputs();
+    }
+
+    function getPayment(id) {
+        const job = jobs.find(j => j.id === id);
+        const kalan = job.total - job.paid;
+        
+        if(kalan <= 0) return alert("Bu işin ödemesi zaten kapalı.");
+        
+        const miktar = prompt(`${job.name} - Kalan: ${kalan} TL. Ne kadar ödeme aldın?`, kalan);
+        if(miktar === null || miktar === "" || isNaN(miktar)) return;
+
+        const alinan = parseFloat(miktar);
+        job.paid += alinan;
+        kasaBakiye += alinan; // Ödemeyi kasaya ekle
+        
+        if(job.paid >= job.total) job.status = 'Bitti';
+        saveAndRender();
+    }
+
+    function changeStatus(id) {
+        const job = jobs.find(j => j.id === id);
+        const s = ['Bekliyor', 'Yapılıyor', 'Bitti'];
+        job.status = s[(s.indexOf(job.status) + 1) % 3];
+        saveAndRender();
+    }
+
+    function sendWa(id) {
+        const job = jobs.find(j => j.id === id);
+        const kalan = job.total - job.paid;
+        const msg = `Selam ${job.name}, Mil Tanıtım'dan Fahrican ben. *${job.work}* işiniz için güncel kalan borç: *${kalan.toLocaleString()} TL*. Hayırlı işler.`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
+    }
+
+    function deleteJob(id) {
+        if(confirm("Bu kaydı silmek istediğine emin misin? (Kasa bakiyesi etkilenmez)")) {
+            jobs = jobs.filter(j => j.id !== id);
+            saveAndRender();
+        }
+    }
+
+    function saveAndRender() {
+        localStorage.setItem('mil_data_v12', JSON.stringify(jobs));
+        localStorage.setItem('mil_kasa_v12', JSON.stringify(kasaBakiye));
+        render();
+    }
+
+    function clearInputs() {
+        document.getElementById('custName').value = '';
+        document.getElementById('workDesc').value = '';
+        document.getElementById('totalPrice').value = '';
+        document.getElementById('maliyet').value = '';
+        document.getElementById('kapora').value = '';
+    }
+
+    function render() {
+        const list = document.getElementById('jobList');
+        list.innerHTML = '';
+        let toplamAlacak = 0;
+        let toplamKar = 0;
+
+        jobs.slice().reverse().forEach(j => {
+            const kalan = j.total - j.paid;
+            const kar = j.total - j.cost;
+            
+            // Sadece bitmemiş veya tam ödenmemiş işleri alacak say
+            if(kalan > 0) toplamAlacak += kalan;
+            toplamKar += kar;
+
+            let sClass = j.status === 'Bitti' ? 'status-done' : (j.status === 'Yapılıyor' ? 'status-doing' : 'status-wait');
+            
+            list.innerHTML += `
+                <div class="job-card ${sClass}">
+                    <div class="job-title">
+                        <span>${j.name}</span>
+                        <span style="font-size:10px; color:var(--slate)">${j.date}</span>
+                    </div>
+                    <div class="job-work">${j.work}</div>
+                    <div class="money-table">
+                        <div>Satış: <b>${j.total} TL</b></div>
+                        <div>Maliyet: <b>${j.cost} TL</b></div>
+                        <div>Ödenen: <b style="color:var(--safe)">${j.paid} TL</b></div>
+                        <div>Kâr: <b style="color:var(--profit)">${kar} TL</b></div>
+                        <div class="rem-row">KALAN BORÇ: <b style="color:var(--mil); font-size:14px;">${kalan.toLocaleString()} TL</b></div>
+                    </div>
+                    <div class="actions">
+                        <button class="btn-act bg-status" onclick="changeStatus(${j.id})">${j.status}</button>
+                        <button class="btn-act bg-wa" onclick="sendWa(${j.id})">WHATSAPP</button>
+                        <button class="btn-act bg-pay" onclick="getPayment(${j.id})">ÖDEME AL</button>
+                        <button class="btn-act bg-del" onclick="deleteJob(${j.id})">SİL</button>
+                    </div>
+                </div>
+            `;
+        });
+
+        document.getElementById('totalKasa').innerText = kasaBakiye.toLocaleString() + " TL";
+        document.getElementById('totalAlacak').innerText = toplamAlacak.toLocaleString() + " TL";
+        document.getElementById('totalProfit').innerText = toplamKar.toLocaleString() + " TL";
+    }
+
+    render();
+</script>
+</body>
+</html>
