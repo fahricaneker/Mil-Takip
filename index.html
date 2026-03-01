@@ -33,7 +33,7 @@
 
 <div class="header-card">
     <h1 style="margin:0; font-size: 18px;">MİL FİNANS</h1>
-    <div id="conn-status">Bağlantı Kontrol Ediliyor...</div>
+    <div id="conn-status">Bağlantı Kuruluyor...</div>
 </div>
 
 <div class="summary-grid">
@@ -49,7 +49,9 @@
         <option value="10">Ekim</option><option value="11">Kasım</option><option value="12">Aralık</option>
     </select>
     <select id="fYear" onchange="loadData()">
-        <option value="2025" selected>2025</option><option value="2026">2026</option>
+        <option value="2025">2025</option>
+        <option value="2026" selected>2026</option>
+        <option value="2027">2027</option>
     </select>
 </div>
 
@@ -84,8 +86,10 @@
         el.style.color = s.val() ? "#22c55e" : "#ef4444";
     });
 
+    // Otomatik Mart 2026 ayarla
     const d = new Date();
     document.getElementById('fMonth').value = d.getMonth() + 1;
+    document.getElementById('fYear').value = d.getFullYear();
 
     function loadData() {
         db.ref("isler").on("value", (snap) => render(snap.val()));
@@ -117,14 +121,17 @@
 
         db.ref("isler/" + itemId).set(item, (error) => {
             if (error) {
-                alert("KAYIT BAŞARISIZ: " + error.message);
+                alert("Hata: " + error.message);
             } else {
                 document.getElementById('cName').value = '';
                 document.getElementById('wDesc').value = '';
                 document.getElementById('tPrice').value = '';
                 document.getElementById('tCost').value = '';
                 document.getElementById('tPaid').value = '';
-                alert("İş buluta kaydedildi.");
+                // Başarıyla kaydedildiğinde filtreyi bugüne getir ki iş görünsün
+                document.getElementById('fMonth').value = item.m;
+                document.getElementById('fYear').value = item.y;
+                loadData();
             }
         });
     }
